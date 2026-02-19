@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Header: month navigation -->
+    <header id="cal-header">
+      <button id="prev-btn" aria-label="Previous month">&lsaquo;</button>
+      <h1 id="month-year-label"></h1>
+      <button id="next-btn" aria-label="Next month">&rsaquo;</button>
+    </header>
+
+    <!-- Day-of-week column labels -->
+    <div id="day-headers" aria-hidden="true">
+      <span>Sun</span>
+      <span>Mon</span>
+      <span>Tue</span>
+      <span>Wed</span>
+      <span>Thu</span>
+      <span>Fri</span>
+      <span>Sat</span>
+    </div>
+
+    <!-- Calendar grid — populated by JS -->
+    <div id="calendar-grid" role="grid" aria-label="Calendar"></div>
+
+  </div><!-- /#app -->
+
+  <!-- Modal overlay -->
+  <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div id="modal-box">
+
+      <div id="modal-header">
+        <h2 id="modal-title">Add Event</h2>
+        <button id="close-btn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <!-- Inline validation error -->
+      <p id="form-error" role="alert" aria-live="assertive"></p>
+
+      <form id="modal-form" novalidate>
+        <div class="field">
+          <label for="f-title">Title <span class="required">*</span></label>
+          <input id="f-title" type="text" placeholder="Event title" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="f-date">Date <span class="required">*</span></label>
+          <input id="f-date" type="date" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-start">Start time</label>
+            <input id="f-start" type="time" />
+          </div>
+          <div class="field">
+            <label for="f-end">End time</label>
+            <input id="f-end" type="time" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-desc">Description</label>
+          <textarea id="f-desc" rows="3" placeholder="Optional notes"></textarea>
+        </div>
+      </form>
+
+      <div id="modal-actions">
+        <button id="delete-btn" class="btn-danger" hidden>Delete</button>
+        <div class="spacer"></div>
+        <button id="cancel-btn" class="btn-secondary">Cancel</button>
+        <button id="save-btn" class="btn-primary">Save</button>
+      </div>
+
+    </div><!-- /#modal-box -->
+  </div><!-- /#modal-overlay -->
+
+  <script src="app.js"></script>
+</body>
+</html>
