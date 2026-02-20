@@ -7,178 +7,35 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="app">
 
-  <!-- ── Top Navigation Bar ──────────────────────────────── -->
-  <header id="top-nav">
-    <div class="nav-left">
-      <button class="hamburger-btn" aria-label="Menu">&#9776;</button>
-      <span class="logo-wrap">
-        <svg class="logo-icon" viewBox="0 0 24 24" width="30" height="30">
-          <rect width="24" height="24" rx="3" fill="#1a73e8"/>
-          <rect x="3" y="7" width="18" height="14" rx="2" fill="#fff"/>
-          <rect x="3" y="7" width="18" height="4" fill="#1a73e8"/>
-          <rect x="7" y="3" width="2" height="4" rx="1" fill="#1a73e8"/>
-          <rect x="15" y="3" width="2" height="4" rx="1" fill="#1a73e8"/>
-          <rect x="6" y="13" width="3" height="2" rx="0.5" fill="#1a73e8"/>
-          <rect x="10.5" y="13" width="3" height="2" rx="0.5" fill="#1a73e8"/>
-          <rect x="15" y="13" width="3" height="2" rx="0.5" fill="#1a73e8"/>
-          <rect x="6" y="16.5" width="3" height="2" rx="0.5" fill="#1a73e8"/>
-          <rect x="10.5" y="16.5" width="3" height="2" rx="0.5" fill="#1a73e8"/>
-          <rect x="15" y="16.5" width="3" height="2" rx="0.5" fill="#1a73e8"/>
-        </svg>
-        <span class="logo-text">Calendar</span>
-      </span>
-    </div>
-
-    <div class="nav-center">
+    <!-- Header: month navigation -->
+    <header id="cal-header">
       <button id="today-btn">Today</button>
-      <button id="prev-btn" aria-label="Previous week">&#8249;</button>
-      <button id="next-btn" aria-label="Next week">&#8250;</button>
-      <h1 id="week-label"></h1>
+      <div class="nav-arrows">
+        <button id="prev-btn" aria-label="Previous month">&lsaquo;</button>
+        <button id="next-btn" aria-label="Next month">&rsaquo;</button>
+      </div>
+      <h1 id="month-year-label"></h1>
+    </header>
+
+    <!-- Day-of-week column labels -->
+    <div id="day-headers" aria-hidden="true">
+      <span>Sun</span>
+      <span>Mon</span>
+      <span>Tue</span>
+      <span>Wed</span>
+      <span>Thu</span>
+      <span>Fri</span>
+      <span>Sat</span>
     </div>
 
-    <div class="nav-right">
-      <button class="icon-btn" aria-label="Search" title="Search">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-        </svg>
-      </button>
-      <button class="icon-btn" aria-label="Help" title="Help">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
-        </svg>
-      </button>
-      <button class="icon-btn" aria-label="Settings" title="Settings">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-        </svg>
-      </button>
-      <button id="view-toggle-btn" class="view-selector">
-        <span id="view-label">Week</span>
-        <span class="caret">&#9660;</span>
-      </button>
-      <div class="avatar">E</div>
-    </div>
-  </header>
+    <!-- Calendar grid — populated by JS -->
+    <div id="calendar-grid" role="grid" aria-label="Calendar"></div>
 
-  <!-- ── Main Layout ──────────────────────────────────────── -->
-  <!-- Sidebar backdrop (mobile only) -->
-  <div id="sidebar-backdrop" hidden></div>
+  </div><!-- /#app -->
 
-  <div id="main-layout">
-
-    <!-- Left Sidebar -->
-    <aside id="sidebar">
-
-      <button id="create-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        <span>New event</span>
-        <span class="caret">&#9660;</span>
-      </button>
-
-      <!-- Mini Month Calendar -->
-      <div id="mini-cal">
-        <div id="mini-cal-header">
-          <span id="mini-month-label"></span>
-          <div class="mini-nav">
-            <button id="mini-prev-btn" aria-label="Previous month">&#8249;</button>
-            <button id="mini-next-btn" aria-label="Next month">&#8250;</button>
-          </div>
-        </div>
-        <div id="mini-day-headers">
-          <span>S</span><span>M</span><span>T</span>
-          <span>W</span><span>T</span><span>F</span><span>S</span>
-        </div>
-        <div id="mini-grid"></div>
-      </div>
-
-      <div class="sidebar-divider"></div>
-
-      <!-- Search people -->
-      <div class="sidebar-search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-        </svg>
-        <span>Search for people</span>
-      </div>
-
-      <div class="sidebar-divider"></div>
-
-      <!-- My Calendars -->
-      <div class="cal-section">
-        <div class="cal-section-header">
-          <span>My calendars</span>
-          <button class="section-btn" aria-label="Collapse">&#8963;</button>
-        </div>
-        <ul class="cal-list">
-          <li class="cal-item">
-            <span class="cal-check" style="--chk:#1a73e8"></span>
-            <span>My Calendar</span>
-          </li>
-          <li class="cal-item">
-            <span class="cal-check" style="--chk:#0f9d58"></span>
-            <span>Birthdays</span>
-          </li>
-          <li class="cal-item">
-            <span class="cal-check" style="--chk:#1a73e8"></span>
-            <span>Tasks</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Other Calendars -->
-      <div class="cal-section">
-        <div class="cal-section-header">
-          <span>Other calendars</span>
-          <button class="section-btn" aria-label="Add">+</button>
-        </div>
-        <ul class="cal-list">
-          <li class="cal-item">
-            <span class="cal-check" style="--chk:#0f9d58"></span>
-            <span>Holidays</span>
-          </li>
-        </ul>
-      </div>
-
-    </aside>
-
-    <!-- Main Calendar Area -->
-    <main id="calendar-main">
-
-      <!-- Week day-name + day-number header -->
-      <div id="week-header">
-        <div class="time-gutter"><span id="gmt-label">GMT+3</span></div>
-        <div id="day-headers-row"></div>
-      </div>
-
-      <!-- All-day event strip -->
-      <div id="allday-row">
-        <div class="time-gutter"></div>
-        <div id="allday-cells"></div>
-      </div>
-
-      <!-- Scrollable time grid -->
-      <div id="time-grid-wrap">
-        <div id="time-grid">
-          <div id="time-labels"></div>
-          <div id="day-columns"></div>
-        </div>
-      </div>
-
-      <!-- Month view (hidden until toggled) -->
-      <div id="month-view">
-        <div id="month-col-headers">
-          <span>SUN</span><span>MON</span><span>TUE</span>
-          <span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
-        </div>
-        <div id="month-grid"></div>
-      </div>
-
-    </main>
-
-  </div><!-- /#main-layout -->
-
-  <!-- ── Modal ────────────────────────────────────────────── -->
+  <!-- Modal overlay -->
   <div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
     <div id="modal-box">
 
@@ -187,6 +44,7 @@
         <button id="close-btn" aria-label="Close modal">&times;</button>
       </div>
 
+      <!-- Inline validation error -->
       <p id="form-error" role="alert" aria-live="assertive"></p>
 
       <form id="modal-form" novalidate>
@@ -194,10 +52,12 @@
           <label for="f-title">Title <span class="required">*</span></label>
           <input id="f-title" type="text" placeholder="Event title" autocomplete="off" />
         </div>
+
         <div class="field">
           <label for="f-date">Date <span class="required">*</span></label>
           <input id="f-date" type="date" />
         </div>
+
         <div class="field-row">
           <div class="field">
             <label for="f-start">Start time</label>
@@ -208,6 +68,7 @@
             <input id="f-end" type="time" />
           </div>
         </div>
+
         <div class="field">
           <label for="f-desc">Description</label>
           <textarea id="f-desc" rows="3" placeholder="Optional notes"></textarea>
@@ -221,8 +82,8 @@
         <button id="save-btn" class="btn-primary">Save</button>
       </div>
 
-    </div>
-  </div>
+    </div><!-- /#modal-box -->
+  </div><!-- /#modal-overlay -->
 
   <script src="app.js"></script>
 </body>
