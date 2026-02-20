@@ -16,3 +16,6 @@ desktop.ini
 # Local env / secrets
 .env
 .env.*
+
+# Claude Code
+.claude/
