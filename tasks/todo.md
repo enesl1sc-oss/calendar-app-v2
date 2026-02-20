@@ -77,6 +77,20 @@ Redesign the visual UI to match Google Calendar's dark week-view layout (see att
 
 ---
 
+## Mobile Responsiveness
+
+### Plan
+
+- [x] R1. **HTML** — Added `#sidebar-backdrop` div (hidden by default)
+
+- [x] R2. **CSS ≤ 768px** — Sidebar slides in as a fixed drawer; backdrop fades in; `#calendar-main` scrolls horizontally so all 7 columns stay accessible; secondary nav items hidden; smaller day numbers and week label
+
+- [x] R3. **CSS ≤ 480px** — Smaller day names/numbers; logo text hidden; modal becomes a bottom sheet
+
+- [x] R4. **JS** — `toggleSidebar()` / `openSidebar()` / `closeSidebar()` wired to hamburger button and backdrop click
+
+---
+
 ## Review
 
 **All 16 checklist items completed in a single implementation pass.**

@@ -818,3 +818,113 @@ button:focus-visible {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #4a4a4a; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #606060; }
+
+/* ============================================================
+   Responsive — Tablet / Mobile  (≤ 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Sidebar becomes a slide-in drawer over the content */
+  #sidebar {
+    position: fixed;
+    top: var(--nav-height);
+    left: calc(-1 * var(--sidebar-w));
+    bottom: 0;
+    z-index: 200;
+    transition: left .25s ease;
+    box-shadow: none;
+  }
+
+  #sidebar.open {
+    left: 0;
+    box-shadow: 4px 0 20px rgba(0,0,0,.6);
+  }
+
+  /* Semi-transparent backdrop behind the open sidebar */
+  #sidebar-backdrop {
+    display: block; /* overrides [hidden] on mobile via JS toggling */
+    position: fixed;
+    inset: 0;
+    top: var(--nav-height);
+    background: rgba(0,0,0,.5);
+    z-index: 199;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+  }
+
+  #sidebar-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* The main layout now takes full width (no sidebar column) */
+  #main-layout {
+    flex-direction: column; /* stacks but sidebar is position:fixed so main fills */
+  }
+
+  /* Nav-left no longer needs a fixed width matching the sidebar */
+  .nav-left {
+    width: auto;
+    min-width: unset;
+  }
+
+  /* Hide secondary nav-right items to save space */
+  .view-selector  { display: none; }
+  .icon-btn[aria-label="Help"],
+  .icon-btn[aria-label="Settings"] { display: none; }
+
+  /* Smaller week label */
+  #week-label {
+    font-size: 16px;
+  }
+
+  /* Allow week header day numbers to shrink */
+  .day-num {
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Shared horizontal scroll: parent scrolls, children set the minimum width */
+  #calendar-main {
+    overflow-x: auto;
+  }
+
+  #week-header,
+  #allday-row,
+  #time-grid-wrap {
+    min-width: 560px; /* ~80px per column — keeps day columns legible */
+  }
+
+  #time-grid {
+    min-width: 560px;
+  }
+}
+
+/* ============================================================
+   Responsive — Small phones  (≤ 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+
+  /* Even smaller day labels */
+  .day-name { font-size: 9px; }
+  .day-num  { font-size: 15px; width: 32px; height: 32px; }
+
+  /* Tighten the top nav */
+  #top-nav { padding: 0 4px; gap: 2px; }
+  #today-btn { padding: 6px 10px; font-size: 13px; }
+  .logo-text  { display: none; } /* save space — logo icon alone identifies the app */
+
+  /* Modal as a bottom sheet */
+  #modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  #modal-box {
+    max-width: 100%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    max-height: 85vh;
+  }
+}

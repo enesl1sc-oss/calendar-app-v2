@@ -463,10 +463,38 @@ function scrollToCurrentTime() {
 }
 
 /* ============================================================
+   Sidebar drawer (mobile)
+   ============================================================ */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  backdrop.removeAttribute('hidden');
+  // Trigger transition on next frame
+  requestAnimationFrame(() => backdrop.classList.add('visible'));
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  backdrop.classList.remove('visible');
+  // Re-hide after the CSS transition completes
+  backdrop.addEventListener('transitionend', () => backdrop.setAttribute('hidden', ''), { once: true });
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+}
+
+/* ============================================================
    Init
    ============================================================ */
 function init() {
   state.events = loadEvents();
+
+  // Hamburger — sidebar drawer on mobile
+  document.querySelector('.hamburger-btn').addEventListener('click', toggleSidebar);
+  document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
 
   // Week navigation
   document.getElementById('prev-btn').addEventListener('click', prevWeek);
