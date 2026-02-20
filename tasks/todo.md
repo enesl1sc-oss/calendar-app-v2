@@ -34,6 +34,49 @@
 
 ---
 
+## UI Redesign — Google Calendar Dark Theme
+
+### Goal
+Redesign the visual UI to match Google Calendar's dark week-view layout (see attached image).
+
+### Plan
+
+- [x] A. **Dark theme CSS variables** — Replace light colors with dark palette in `style.css`
+  - Background: `#1f1f1f`, surface: `#2d2d2d`, border: `#3c3c3c`, text: `#e3e3e3`
+  - Today highlight: blue circle on day number
+  - Keep existing event chip colors
+
+- [x] B. **Full-page layout in `index.html`** — Restructure HTML into:
+  - `#top-nav` — top bar (hamburger, logo, today btn, prev/next, week label, icons, view switcher, avatar)
+  - `#sidebar` — left panel (create button, mini month calendar, calendar list sections)
+  - `#calendar-main` — right area (week day headers + time grid)
+
+- [x] C. **Top navbar CSS** — Fixed height bar across top, flex row, dark background
+
+- [x] D. **Sidebar CSS** — Fixed-width left panel (~256px), scrollable, dark background
+
+- [x] E. **Week view HTML structure** — Day-header row + scrollable time grid with:
+  - Left time label column (GMT+3, 1 AM … 11 PM)
+  - 7 day columns with hour-row cells
+  - All-day event row at top of grid
+
+- [x] F. **Week view CSS** — Grid layout for day columns, hour rows, time labels, all-day row, current-time red line indicator
+
+- [x] G. **app.js — week view rendering** — Replaced `renderGrid()` month logic with:
+  - `getWeekDates()` → array of 7 Date objects for Sun–Sat
+  - `renderWeekHeader()` — day name + date number in each column header
+  - `renderTimeGrid()` — 24 hour-row cells per column, event chips positioned by time
+  - `prevWeek`/`nextWeek` navigate by ±7 days; syncs mini-cal month
+  - "Today" button jumps to current week and scrolls to current time
+
+- [x] H. **Mini calendar in sidebar** — Small month grid; clicking a date navigates the week view; current week days highlighted in blue; today shown as filled blue circle
+
+- [x] I. **Current time indicator** — Red dot + horizontal line in today's column at the exact minute position; refreshes every 60 s
+
+- [x] J. **Final QA** — All files written; week navigation, event CRUD, modal, dark theme verified
+
+---
+
 ## Review
 
 **All 16 checklist items completed in a single implementation pass.**
