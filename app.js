@@ -15,7 +15,10 @@ const HOUR_H = 48; // px — must match --hour-h in CSS
 
 /* ---- State ---- */
 const state = {
+  view:          'week',                    // 'week' | 'month'
   weekStart:     getWeekStart(new Date()),  // Sunday of the displayed week
+  monthYear:     new Date().getFullYear(),  // year shown in month view
+  monthMonth:    new Date().getMonth(),     // month shown in month view
   events:        [],
   editingId:     null,
   miniCalYear:   new Date().getFullYear(),
@@ -84,11 +87,23 @@ function syncMiniCalToWeek() {
    Main Render
    ============================================================ */
 function renderCalendar() {
-  renderWeekLabel();
-  renderWeekHeader();
-  renderAlldayRow();
-  renderTimeGrid();
-  renderCurrentTimeLine();
+  const main = document.getElementById('calendar-main');
+
+  if (state.view === 'month') {
+    main.classList.add('month-view');
+    document.getElementById('view-label').textContent = 'Month';
+    renderMonthLabel();
+    renderMonthView();
+  } else {
+    main.classList.remove('month-view');
+    document.getElementById('view-label').textContent = 'Week';
+    renderWeekLabel();
+    renderWeekHeader();
+    renderAlldayRow();
+    renderTimeGrid();
+    renderCurrentTimeLine();
+  }
+
   renderMiniCal();
 }
 
@@ -106,6 +121,79 @@ function renderWeekLabel() {
     label = `${MONTH_NAMES[first.getMonth()]} ${first.getFullYear()}`;
   }
   document.getElementById('week-label').textContent = label;
+}
+
+/* ---- Month view label ---- */
+function renderMonthLabel() {
+  document.getElementById('week-label').textContent =
+    `${MONTH_NAMES[state.monthMonth]} ${state.monthYear}`;
+}
+
+/* ---- Month grid ---- */
+function renderMonthView() {
+  const grid = document.getElementById('month-grid');
+  grid.innerHTML = '';
+
+  const { monthYear: year, monthMonth: month } = state;
+  const today       = todayStr();
+  const firstDow    = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const prevDays    = new Date(year, month, 0).getDate();
+
+  // Leading cells (previous month)
+  for (let i = 0; i < firstDow; i++) {
+    grid.appendChild(buildMonthCell(prevDays - firstDow + i + 1, null, false, true));
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    grid.appendChild(buildMonthCell(d, dateStr, dateStr === today, false));
+  }
+
+  // Trailing cells (next month)
+  const remainder = (firstDow + daysInMonth) % 7;
+  if (remainder !== 0) {
+    for (let d = 1; d <= 7 - remainder; d++) {
+      grid.appendChild(buildMonthCell(d, null, false, true));
+    }
+  }
+}
+
+function buildMonthCell(dayNum, dateStr, isToday, isOther) {
+  const cell = document.createElement('div');
+  let cls = 'month-cell';
+  if (isOther) cls += ' other-month';
+  if (isToday) cls += ' today';
+  cell.className = cls;
+
+  const numEl = document.createElement('span');
+  numEl.className = 'month-day-num';
+  numEl.textContent = dayNum;
+  cell.appendChild(numEl);
+
+  if (dateStr) {
+    // Event chips sorted by time
+    const events = [...getEventsForDate(dateStr)].sort((a, b) => {
+      if (!a.startTime && !b.startTime) return 0;
+      if (!a.startTime) return 1;
+      if (!b.startTime) return -1;
+      return a.startTime.localeCompare(b.startTime);
+    });
+
+    events.forEach((ev, idx) => {
+      const chip = document.createElement('span');
+      chip.className = 'month-event-chip';
+      chip.style.background = `var(${CHIP_COLORS[idx % CHIP_COLORS.length]})`;
+      chip.textContent = ev.startTime ? `${ev.startTime} ${ev.title}` : ev.title;
+      chip.addEventListener('click', e => { e.stopPropagation(); openModal(dateStr, ev.id); });
+      cell.appendChild(chip);
+    });
+
+    cell.addEventListener('click', () => openModal(dateStr, null));
+  }
+
+  return cell;
 }
 
 /* ---- Day-name / day-number header row ---- */
@@ -274,7 +362,10 @@ function renderMiniCal() {
   grid.innerHTML = '';
 
   const today     = todayStr();
-  const weekDates = new Set(getWeekDates(state.weekStart).map(d => toDateStr(d)));
+  // Only highlight in-week days when in week view
+  const weekDates = state.view === 'week'
+    ? new Set(getWeekDates(state.weekStart).map(d => toDateStr(d)))
+    : new Set();
 
   const firstDow    = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -291,8 +382,15 @@ function renderMiniCal() {
     const isToday  = dateStr === today;
     const isInWeek = weekDates.has(dateStr);
     const span = makeMiniDay(d, false, isToday, isInWeek, () => {
-      state.weekStart = getWeekStart(new Date(year, month, d));
-      syncMiniCalToWeek();
+      if (state.view === 'month') {
+        state.monthYear  = year;
+        state.monthMonth = month;
+        state.miniCalYear  = year;
+        state.miniCalMonth = month;
+      } else {
+        state.weekStart = getWeekStart(new Date(year, month, d));
+        syncMiniCalToWeek();
+      }
       renderCalendar();
     });
     grid.appendChild(span);
@@ -418,27 +516,71 @@ function handleDelete() {
 }
 
 /* ============================================================
-   Week Navigation
+   Navigation (prev / next / today — works for both views)
    ============================================================ */
-function prevWeek() {
-  state.weekStart = new Date(state.weekStart);
-  state.weekStart.setDate(state.weekStart.getDate() - 7);
-  syncMiniCalToWeek();
+function handlePrev() {
+  if (state.view === 'month') {
+    if (state.monthMonth === 0) { state.monthMonth = 11; state.monthYear--; }
+    else { state.monthMonth--; }
+    state.miniCalYear  = state.monthYear;
+    state.miniCalMonth = state.monthMonth;
+  } else {
+    state.weekStart = new Date(state.weekStart);
+    state.weekStart.setDate(state.weekStart.getDate() - 7);
+    syncMiniCalToWeek();
+  }
   renderCalendar();
 }
 
-function nextWeek() {
-  state.weekStart = new Date(state.weekStart);
-  state.weekStart.setDate(state.weekStart.getDate() + 7);
-  syncMiniCalToWeek();
+function handleNext() {
+  if (state.view === 'month') {
+    if (state.monthMonth === 11) { state.monthMonth = 0; state.monthYear++; }
+    else { state.monthMonth++; }
+    state.miniCalYear  = state.monthYear;
+    state.miniCalMonth = state.monthMonth;
+  } else {
+    state.weekStart = new Date(state.weekStart);
+    state.weekStart.setDate(state.weekStart.getDate() + 7);
+    syncMiniCalToWeek();
+  }
   renderCalendar();
 }
 
 function goToToday() {
-  state.weekStart = getWeekStart(new Date());
-  syncMiniCalToWeek();
+  const now = new Date();
+  if (state.view === 'month') {
+    state.monthYear    = now.getFullYear();
+    state.monthMonth   = now.getMonth();
+    state.miniCalYear  = state.monthYear;
+    state.miniCalMonth = state.monthMonth;
+    renderCalendar();
+  } else {
+    state.weekStart = getWeekStart(now);
+    syncMiniCalToWeek();
+    renderCalendar();
+    scrollToCurrentTime();
+  }
+}
+
+/* ---- Toggle between week and month view ---- */
+function toggleView() {
+  if (state.view === 'week') {
+    // Switch to month: show the month the current week belongs to
+    state.view = 'month';
+    const thu = new Date(state.weekStart);
+    thu.setDate(thu.getDate() + 4);
+    state.monthYear    = thu.getFullYear();
+    state.monthMonth   = thu.getMonth();
+    state.miniCalYear  = state.monthYear;
+    state.miniCalMonth = state.monthMonth;
+  } else {
+    // Switch to week: show the week containing the 1st of the current month
+    state.view = 'week';
+    state.weekStart = getWeekStart(new Date(state.monthYear, state.monthMonth, 1));
+    syncMiniCalToWeek();
+  }
   renderCalendar();
-  scrollToCurrentTime();
+  if (state.view === 'week') scrollToCurrentTime();
 }
 
 /** Mini-calendar month navigation */
@@ -496,10 +638,13 @@ function init() {
   document.querySelector('.hamburger-btn').addEventListener('click', toggleSidebar);
   document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
 
-  // Week navigation
-  document.getElementById('prev-btn').addEventListener('click', prevWeek);
-  document.getElementById('next-btn').addEventListener('click', nextWeek);
+  // Navigation (prev / next / today)
+  document.getElementById('prev-btn').addEventListener('click', handlePrev);
+  document.getElementById('next-btn').addEventListener('click', handleNext);
   document.getElementById('today-btn').addEventListener('click', goToToday);
+
+  // View toggle (Week ↔ Month)
+  document.getElementById('view-toggle-btn').addEventListener('click', toggleView);
 
   // Mini calendar navigation
   document.getElementById('mini-prev-btn').addEventListener('click', miniPrev);

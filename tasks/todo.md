@@ -91,6 +91,18 @@ Redesign the visual UI to match Google Calendar's dark week-view layout (see att
 
 ---
 
+## Month View Toggle
+
+### Plan
+
+- [x] V1. **`index.html`** — `view-selector` div → `<button id="view-toggle-btn">`; added `#month-view` with `#month-col-headers` and `#month-grid` inside `#calendar-main`
+
+- [x] V2. **`style.css`** — Month-view styles: column headers, 7-column grid, day cells with `minmax(90px,1fr)` rows, today circle, event chips; `.month-view` class on `#calendar-main` hides week elements and shows month view; mobile overrides remove forced min-width in month view
+
+- [x] V3. **`app.js`** — `state.view`, `state.monthYear/Month` added; `renderCalendar()` dispatches to week or month renderers and updates button label; `renderMonthLabel()`, `renderMonthView()`, `buildMonthCell()` added; `handlePrev()`/`handleNext()`/`goToToday()` handle both views; `toggleView()` switches views and syncs state; mini-cal click and in-week highlighting respect the current view
+
+---
+
 ## Review
 
 **All 16 checklist items completed in a single implementation pass.**
